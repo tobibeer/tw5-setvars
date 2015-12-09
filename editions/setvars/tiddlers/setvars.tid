@@ -1,0 +1,11 @@
+created: 20151209131441355
+creator: Tobias Beer
+modified: 20151209142515596
+tabs: Info Syntax Examples Install
+tags: Plugins Widgets
+title: setvars
+type: text/vnd.tiddlywiki
+
+<<plugin-docs setvars>>
+
+<<plugin-docs-cp setvars>>

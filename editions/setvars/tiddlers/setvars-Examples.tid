@@ -1,0 +1,142 @@
+created: 20151209092945086
+creator: Tobias Beer
+modified: 20151209141545477
+tags: 
+title: setvars-Examples
+type: text/vnd.tiddlywiki
+
+\define nice() Nice to meet you.
+
+'' the literal ` text `, with leading and trailing white-space''
+
+<$macrocall $name="`" text="""<$setvars foo="\ text \ \<= notice the white-space\">
+<<foo>>
+</$setvars>"""/>
+
+''set foo via bar and its value, the current title''
+
+<$macrocall $name="`" text="""<$setvars foo="bar" _bar={{!!title}}>
+<<foo>>
+</$setvars>"""/>
+
+''set two complex variables in one go''
+
+<$macrocall $name="`" text="""<$setvars
+foo="bar \ => \ baz"
+	_bar={{!!title}}
+	_baz="ok"
+mumble="frotz \ => \ gronk"
+	_frotz=<<currentTiddler>>
+	_gronk={{!!modified}}>
+<<foo>><br><<mumble>>
+</$setvars>"""/>
+
+''evaluates bar as a filter expression''
+
+<$macrocall $name="`" text="""<$setvars foo="[bar]" _bar="[all[current]]">
+<<foo>>
+</$setvars>"""/>
+
+'' parse bar as a list and returns the first item''
+
+<$macrocall $name="`" text="""<$setvars foo="bar[1]" _bar="1 2 3">
+<<foo>>
+</$setvars>"""/>
+
+''returns only the second item''
+
+<$macrocall $name="`" text="""<$setvars foo="bar[2] \ <= here the same as => \ [bar[2]]" _bar="1 2 3">
+<<foo>>
+</$setvars>"""/>
+
+''returns the second item or `fallback` if that is undefined''
+
+<$macrocall $name="`" text="""<$setvars foo="bar[2][fallback]" _bar="1">
+<<foo>>
+</$setvars>"""/>
+
+''evaluates as a filter and returns the third item or `empty` if undefined''
+
+<$macrocall $name="`" text="""<$setvars foo="[bar[3][empty]]" _bar="1 2">
+<<foo>>
+</$setvars>"""/>
+
+'' returns the last item, as does foo[-1]''
+
+<$macrocall $name="`" text="""<$setvars foo="
+bar[n] \ = \
+bar[-1] \ = \
+[bar[n]] \ = \
+[bar[-1]]" _bar="a b c">
+<<foo>>
+</$setvars>"""/>
+
+''returns 3 items, starting from the second''
+
+<$macrocall $name="`" text="""<$setvars foo="bar[2,3]" _bar="a b c d e">
+<<foo>>
+</$setvars>"""/>
+
+'' returns 2 items, starting from the last, going backwards''
+
+<$macrocall $name="`" text="""<$setvars foo="bar[n,-2]" _bar="a b c d e">
+<<foo>>
+</$setvars>"""/>
+
+''returns the third last item''
+
+<$macrocall $name="`" text="""<$setvars foo="bar[-3]" _bar="a b c d e">
+<<foo>>
+</$setvars>"""/>
+
+''evaluates as a filter and returns two items, starting with the third last item''
+
+<$macrocall $name="`" text="""<$setvars foo="bar[-3,2]" _bar="a b c d e">
+<<foo>>
+</$setvars>"""/>
+
+''returns two items, starting with the third last item, going backwards''
+
+<$macrocall $name="`" text="""<$setvars foo="bar[-3,-2]" _bar="a b c d e">
+<<foo>>
+</$setvars>"""/>
+
+''returns however many items there are from the third last to the end''
+
+<$macrocall $name="`" text="""<$setvars foo="bar[-3,n]" _bar="a b c d e">
+<<foo>>
+</$setvars>"""/>
+
+''returns however many items there are from the first to the third last''
+
+<$macrocall $name="`" text="""<$setvars foo="bar[-3,-n]" _bar="a b c d e">
+<<foo>>
+</$setvars>"""/>
+
+''bar[3,-n] is actually the same as bar[1,3]''
+
+<$macrocall $name="`" text="""<$setvars foo="bar[3,-n] \ = \ bar[1,3]" _bar="a b c d e">
+<<foo>>
+</$setvars>"""/>
+
+''don't be weird, just use bar[1]''
+
+<$macrocall $name="`" text="""<$setvars foo="bar[1] \ = \ bar[-n]" _bar="a b c d e">
+<<foo>>
+</$setvars>"""/>
+
+!! Full Circle
+
+```
+\define nice() Nice to meet you.
+```
+
+<$macrocall $name="`" text="""<$setvars
+	foo="hi \, \ me \! \ nice \<br>\ [list[2,3]]"
+		_hi="Hi"
+		_me={{!!title}}
+		_nice=<<nice>>
+		_list= "1 => [all[current]]"
+	bar="hi \, again! ;-)\">
+<<foo>><br><<bar>>
+</$setvars>"""/>

@@ -1,0 +1,12 @@
+{
+    "title": "$:/plugins/tobibeer/setvars",
+    "description": "Set multiple variables from joined attributes",
+    "author": "Tobias Beer",
+    "version": "0.5.0",
+    "core-version": ">=5.1.9",
+    "source": "https://github.com/tobibeer/tw5-setvars",
+    "documentation": "https://tobibeer.github.io/tw5-setvars",
+    "plugin-type": "plugin",
+	"requires": "",
+	"list": "readme"
+}

@@ -1,0 +1,21 @@
+title: $:/plugins/tobibeer/setvars/readme
+
+Provides the widget `<$setvars>`...
+
+!!Usage
+
+```
+<$setvars
+var1="attr1 \ literal \ attr2"
+	_attr1=<<currentTiddler>>
+	_attr2={{!!title}}
+var2="attr3[n] \ \ [attr4[1,2][when-empty]"
+	_attr3="1 2 3"
+	_attr4="[all[current]tagging[]]">
+<<var1>>
+<<var2>>
+</$setvars>
+```
+
+; documentation / examples / demos...
+: http://tobibeer.github.io/tw5-plugins#setvars
