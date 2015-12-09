@@ -1,6 +1,6 @@
 created: 20151209131525981
 creator: Tobias Beer
-modified: 20151209145558436
+modified: 20151209171909910
 tags: 
 title: setvars-Syntax
 type: text/vnd.tiddlywiki
@@ -27,39 +27,49 @@ You can use the following constructs in the variable declaration:
 ; \ text \
 : returns the literal ` text `, with leading and trailing white-space
 ; foo
-: refers to the attribute ''_foo'' and its value
+: refers to the attribute ''_foo'' and its value @@.demo-items ''a b c d e''@@
 ; [foo]
-: evaluates ''_foo'' as a filter expression
+: evaluates ''_foo'' as a filter expression @@.demo-items ''a b c d e''@@
 ; foo[1]
-: parses''_foo'' as a list and returns the first item
+: parses''_foo'' as a list and returns the first item@@.demo-items ''a'' b c d e@@
 ; [foo[1]]
-: evaluates ''_foo'' as a filter and returns the first item
+: evaluates ''_foo'' as a filter and returns the first item@@.demo-items ''a'' b c d e@@
 ; foo[2]
-: returns only the second item
+: returns only the second item@@.demo-items a ''b'' c d e@@
 ; foo[2][fallback]
-: returns the second item or `fallback` if that is undefined
+: returns the second item or `fallback` if that is undefined@@.demo-items a ''b'' c d e@@
 ; [foo[3][empty]]
-: evaluates as a filter and returns the third item or `empty` if undefined
+: evaluates as a filter and returns the third item or `empty` if undefined@@.demo-items a b ''c'' d e@@
 ; foo[n]
-: parses''_foo'' as a list and returns the last item, as does ''foo[-1]''
+: parses''_foo'' as a list and returns the last item, as does ''foo[-1]''@@.demo-items a b c d ''e''@@
 ; [foo[n]]
-: evaluates ''_foo'' as a filter and returns the last item, as does ...you guessed right
+: evaluates ''_foo'' as a filter and returns the last item as above @@.demo-items a b c d ''e''@@
 ; foo[2,3]
-: returns 3 items, starting from the second
+: returns 3 items, starting from the second@@.demo-items a ''b c d'' e@@
 ; foo[n,-2]
-: returns 2 items, starting from the last, going backwards
+: returns 2 items, starting from the last, going backwards@@.demo-items a b c ''d e''@@
 :: the last two items, so to speak
 ; foo[-3]
-: returns the third last item
+: returns the third last item@@.demo-items a b ''c'' d e@@
 ; [foo[-3,2]]
-: evaluates as a filter and returns two items, starting with the third last item
+: evaluates as a filter and returns two items, starting with the third last item@@.demo-items a b ''c d'' e@@
 ; foo[-3,-2]
-: returns two items, starting with the third last item, going backwards
+: returns two items, starting with the third last item, going backwards@@.demo-items a ''b c'' d e@@
 ; foo[-3,n]
-: returns however many items there are from the third last to the end
+: returns however many items there are from the third last to the end@@.demo-items a b ''c d e''@@
 ; foo[-3,-n]
-: returns however many items there are from the first to the third last
+: returns however many items there are from the first to the third last@@.demo-items ''a b c'' d e@@
 ; foo[3,-n]
-: is actually the same as ''foo[1,3]''
+: is actually the same as ''foo[1,3]''@@.demo-items ''a b c'' d e@@
 ; foo[-n]
-: don't be weird, just use ''foo[1]''
+: don't be weird, just use ''foo[1]''@@.demo-items ''a'' b c d e@@
+
+<style>
+.demo-items {
+float:right;
+color: #ccc;
+}
+.demo-items strong{
+color: #909;
+}
+</style>
