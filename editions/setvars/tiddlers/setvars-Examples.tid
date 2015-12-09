@@ -1,6 +1,6 @@
 created: 20151209092945086
 creator: Tobias Beer
-modified: 20151209141545477
+modified: 20151209150227897
 tags: 
 title: setvars-Examples
 type: text/vnd.tiddlywiki
@@ -31,9 +31,9 @@ mumble="frotz \ => \ gronk"
 <<foo>><br><<mumble>>
 </$setvars>"""/>
 
-''evaluates bar as a filter expression''
+''evaluates bar as a filter expression using [[eval]]''
 
-<$macrocall $name="`" text="""<$setvars foo="[bar]" _bar="[all[current]]">
+<$macrocall $name="`" text="""<$setvars foo="[bar]" _bar="[[1]eval[1 + title]]">
 <<foo>>
 </$setvars>"""/>
 
