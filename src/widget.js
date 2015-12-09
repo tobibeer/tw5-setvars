@@ -78,9 +78,7 @@ SetVarsWidget.prototype.execute = function() {
 					(l < 0 ? s + l + 1 : s)
 				);
 				l = Math.max(1,Math.abs(l));
-				console.log("SPLICING",result,s-1,l);
 				result = result.splice(s-1,l);
-				console.log("SPLICE-RESULT",result,s-1,l);
 			}
 			if(empty && !result.length) {
 				result.push(empty);
@@ -110,7 +108,6 @@ SetVarsWidget.prototype.execute = function() {
 			match = /^\\([^\\]*)\\/.exec(vs);
 			if(match) {
 				value += match[1];
-				console.log("LITERAL",value,match);
 				vs = vs.substr(match[0].length);
 			}
 			match = re.exec(vs);
