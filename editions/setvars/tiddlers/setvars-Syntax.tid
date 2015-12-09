@@ -1,6 +1,6 @@
 created: 20151209131525981
 creator: Tobias Beer
-modified: 20151209142701212
+modified: 20151209145558436
 tags: 
 title: setvars-Syntax
 type: text/vnd.tiddlywiki
@@ -48,6 +48,7 @@ You can use the following constructs in the variable declaration:
 : returns 3 items, starting from the second
 ; foo[n,-2]
 : returns 2 items, starting from the last, going backwards
+:: the last two items, so to speak
 ; foo[-3]
 : returns the third last item
 ; [foo[-3,2]]
