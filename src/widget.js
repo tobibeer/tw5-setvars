@@ -83,7 +83,7 @@ SetVarsWidget.prototype.execute = function() {
 			if(empty && !result.length) {
 				result.push(empty);
 			}
-			return $tw.utils.stringifyList(result);
+			return filter ? $tw.utils.stringifyList(result) : result[0];
 		};
 	this.set = {};
 	this.use = {};
