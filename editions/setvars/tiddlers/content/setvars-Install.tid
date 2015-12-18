@@ -1,14 +1,14 @@
+title: setvars-Install
 created: 20151209141659104
 creator: Tobias Beer
 modified: 20151209160745843
-tags: 
-title: setvars-Install
-type: text/vnd.tiddlywiki
 
 <<plugin-install setvars>>
 
 !! Version History
 
+; 0.5.2 2015-12-18
+: bugfix for stringifying single values as a filter
 ; 0.5.1 2015-12-09
 : removed leftover console log statements
 ; 0.5.0 2015-12-09
