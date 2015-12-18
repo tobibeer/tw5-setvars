@@ -1,6 +1,6 @@
 created: 20151209131525981
 creator: Tobias Beer
-modified: 20151209171909910
+modified: 20151218135143688
 tags: 
 title: setvars-Syntax
 type: text/vnd.tiddlywiki
@@ -22,10 +22,23 @@ All put together, this is the result of it:
 
 !! Variable Declaration
 
-You can use the following constructs in the variable declaration:
+The attributes you wish to use in a variable declaration can be interpreted in a number of ways, in general either literal, as a value or as a filter:
+
+; literal
+: `\<literal-text>\`
+; value
+: `<text-attribute>[<start>,<length>][<empty>]`
+; filter
+: `[<filter-attribute>[<start>,<length>][<empty>][<joiner>]]`
+
+Whereas __all__ `<options>` are, well, optional.
+
+!! Syntax Examples
+
+Here's how you can use the above to construct variable declarations:
 
 ; \ text \
-: returns the literal ` text `, with leading and trailing white-space
+: returns the literal ` text `, with leading and trailing white-space @@.demo-items '' text ''@@
 ; foo
 : refers to the attribute ''_foo'' and its value @@.demo-items ''a b c d e''@@
 ; [foo]
@@ -40,6 +53,10 @@ You can use the following constructs in the variable declaration:
 : returns the second item or `fallback` if that is undefined@@.demo-items a ''b'' c d e@@
 ; [foo[3][empty]]
 : evaluates as a filter and returns the third item or `empty` if undefined@@.demo-items a b ''c'' d e@@
+; [foo[][][ ]]
+: evaluates as a filter and joins all items with an empty string@@.demo-items ''a b c d e''@@
+; [foo[][][ - ]]
+: evaluates as a filter and joins all items with ` - `@@.demo-items ''a - b - c - d - e''@@
 ; foo[n]
 : parses''_foo'' as a list and returns the last item, as does ''foo[-1]''@@.demo-items a b c d ''e''@@
 ; [foo[n]]
