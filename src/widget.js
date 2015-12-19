@@ -47,16 +47,16 @@ SetVarsWidget.prototype.execute = function() {
 		Helper function to parse the elements of a variable declaration
 		*/
 		getElements = function(val,filter,match) {
-			var len,result,s0,
+			var len,result,
 				// The start index to be retrieved
 				start = match[3],
 				// The number of items to be retrieved
 				length = match[4],
-				// An empty value should the list be empty
+				// An empty value should the lists be empty
 				empty = match[5],
 				// Whether we want to join the output
 				join = match[6],
-				// Turn start and length into inteers
+				// Turn start and length into integers
 				s = parseInt(start),
 				l = parseInt(length),
 				// Whether or not we want spliced results
@@ -111,8 +111,6 @@ SetVarsWidget.prototype.execute = function() {
 					// So we just want one item
 					l = 1;
 				}
-				// Store start, because we're about to change it and need it later
-				s0 = s;
 				// Compute start as max of either 1 or...
 				s = Math.max(1,
 					s < 0 ?
@@ -128,11 +126,11 @@ SetVarsWidget.prototype.execute = function() {
 				);
 				// Calculate length as maximum of 1 or the absolute value of l
 				l = Math.max(1,Math.abs(l));
-				// Splice those results accordingly
+				// Splice results accordingly
 				result = result.splice(s-1,l);
 			}
-			// Do we have an empty value and no results?
-			if(empty && !result.length) {
+			// Do we have no results and is there an empty value?
+			if(!result.length && empty) {
 				// Output the empty value
 				result.push(empty);
 			}
@@ -140,13 +138,13 @@ SetVarsWidget.prototype.execute = function() {
 			return array ?
 				// If we did
 				(
-					join !== undefined ?
-					// Join output
-					result.join(join) :
-					// Or stringify
-					$tw.utils.stringifyList(result)
+					join === undefined ?
+					// Stringify output
+					$tw.utils.stringifyList(result) :
+					// Or join
+					result.join(join)
 				) :
-				// Not really an array => value from first item
+				// Not really an array => get value as first item
 				result[0];
 		};
 	// Initialize objects holding the defined variable configuration
@@ -156,77 +154,212 @@ SetVarsWidget.prototype.execute = function() {
 	$tw.utils.each(this.attributes,function(val,key) {
 		// Is this one used at a variable declaration?
 		if(key.charAt(0) === "_") {
-			// Store ate use configuration
+			// Store at "use" configurations
 			self.use[key.substr(1)] = val;
 		// Is this a variable declaration?
 		} else {
-			// Store as variable declaration
+			// Store as "set" declarations
 			self.set[key] = val;
 		}
 	});
-
 	// Loop all variables to be set
 	$tw.utils.each(self.set,function(vars,name) {
-		var i,match,v,value="",was,
-			// This one checks if we're evaluating a filter and grabs all the start / end / empty bits
-			// The capture groups:
-			// 1: starting bracket 6: closing braket for filter
-			// 2: the name of the attribute
-			// 3: start number
-			// 4: number of titles to get
-			// 5: empty value
-			re = /^(\[)?(\w+)(?:\[(-?\d*|-?n)(?:,(-?\d*|-?n))?\])?(?:\[([^\]]*)\])?(?:\[([^\]]*)\])?(\])?(?:\s|$)/,
-			// Copy that string
-			vs = vars;
-		// So long as we have some of it left
-		while(vs){
-			// Se if it changed since the last turn
-			was = vs;
-			// Discard white-space
-			match = /^\s/.exec(vs);
-			if(match) {
-				vs = vs.substr(match[0].length);
-			}
-			// Check if it's a literal
-			match = /^\\([^\\]*)\\/.exec(vs);
-			// If it is
-			if(match) {
-				// Simply add to the output
-				value += match[1];
-				// Cut off
-				vs = vs.substr(match[0].length);
-			}
-			// Check if we got an attribute definition
-			match = re.exec(vs);
-			// Got one?
-			if(match) {
-				// Get the value for the attribute
-				v = self.use[match[2]];
-				// Is it non-empty?
-				if(v) {
-					// Do we want a filter?
-					if(match[1] && match[7]) {
-						// Retrieve the value from a filter
-						value += getElements(v,true,match);
-					// We don't want a filter?
-					} else if(!match[1] && !match[7]) {
-						// Retrieve the value from a string
-						value += getElements(v,false,match);
-					// We have just an opening or a closing bracket?
+		var collect,next,was,
+			bIF,bTRUE,bTHEN,bELSE,hadTHEN,
+			// The last value we had, was none
+			last="",
+			// Not skipping
+			skip=0,
+			// Init  variable value
+			value="",
+			// Copy vars string
+			vs = vars,
+			// Any patterns we're going to match as array of configurations being arrays of...
+				// 0: the pattern regex
+				// 1: if truthy, this pattern is skippable
+				// 2: a function evaluating the pattern match
+				//	  => returns  the string to be appended to the value
+			patterns = [
+				// Skip whitespace
+				[/^\s+/, 1, function() {
+					return false;
+				}],
+				// A literal
+				[/^\\([^\\]*)\\/, 2, function(match) {
+					// Take as is
+					return match[1];
+				}],
+				// IF clause as...
+				// if( foo || bar ? baz || mumble : frotz || gronk)
+				// || => OR => (optional) take the first non-empty condition from left to right
+				// ? => end of IF clause condition => met if collector non-empty
+				// : => end of THEN branch => (optional) take this output when IF clause condition is met
+				// ) => end of ELSE branch => (optional) take this output when IF clause condition is NOT met
+				[/^(if\s*\(|\?|\:|\|\||\))/i, 0, function(match) {
+					if(match[1].substr(0,2).toLowerCase() === "if") {
+						// Set IF clause flag
+						bIF = 1;
+						// Reset flags
+						bTRUE = bTHEN = bELSE = hadTHEN = skip = 0;
+						// Start collecting
+						collect = "";
 					} else {
-						// Wrong syntax
-						value += "setvars: missing bracket";
+						// Switch matches
+						switch (match[1]) {
+							// ORing values, works within or outside an IF clause
+							case "||":
+								// Already got a collected value?
+								if(last && last.length) {
+									// Start skipping
+									skip = 1;
+								}
+								break;
+							// Done with the IF clause condition
+							case "?":
+								// Only if we're in an IF clause
+								if(bIF) {
+									// Condition non empty? => then it is met
+									bTRUE = collect.length;
+									// Now we're in the THEN branch
+									bTHEN = 1;
+									// Reset skipping
+									skip = 0;
+									// Start collecting
+									collect =last = "";
+								}
+								break;
+							// Done with the THEN branch of the IF clause
+							case ":":
+								// Only if we're in an IF clause
+								if(bIF) {
+									// Start ELSE branch and remember that we had a THEN branch
+									bELSE = hadTHEN = 1;
+									// Was IF clause condition true?
+									if(bTRUE) {
+										// Add collector to value
+										value += collect;
+									}
+									// End THEN branch
+									bTHEN = skip = 0;
+									// Start collecting
+									collect = last = "";
+								}
+								break;
+							// Done with the IF clause
+							case ")":
+								// Only if we were in an IF clause
+								if(bIF) {
+									// Was IF clause condition false?
+									// OR did we never have a THEN branch
+									if(!bTRUE || !hadTHEN) {
+										// Add collector to value
+										value += collect;
+									}
+									// Reset flags
+									bIF = bTRUE = bTHEN = bELSE = skip = 0;
+									// Start collecting anew
+									collect = ""; last = "";
+								}
+								break;
+							}
+						}
+					return false;
+				}],
+				// Looks for definition to evaluate a value or filter
+				// Grabs all the start / end / empty / join options
+				// Using these capture groups:
+				// 1: starting bracket 6: closing braket for filter
+				// 2: the name of the attribute
+				// 3: start number
+				// 4: number of titles to get
+				// 5: empty value
+				[/^(\[)?(\w+)(?:\[(-?\d*|-?n)(?:,(-?\d*|-?n))?\])?(?:\[([^\]]*)\])?(?:\[([^\]]*)\])?(\])?/, 2, function(match) {
+					// Get the value for the attribute
+					var v = self.use[match[2]];
+					// Is it non-empty?
+					if(v) {
+						// Do we want a filter?
+						if(match[1] && match[7]) {
+							// Retrieve the value from a filter
+							v = getElements(v,true,match);
+						// We don't want a filter?
+						} else if(!match[1] && !match[7]) {
+							// Retrieve the value from a string
+							v = getElements(v,false,match);
+						// We have just an opening or a closing bracket?
+						} else {
+							// Wrong syntax
+							v = null;
+						}
 					}
+					return v;
+				}]
+			];
+
+		// So long as we have a definition string...
+		while(vs.length){
+			// Remember what it was before pattern matching
+			was = vs;
+			// Reset string to append
+			var append = "";
+			// Loop patterns
+			$tw.utils.each(patterns, function(p) {
+				// Test pattern against current remainder
+				var match = p[0].exec(vs);
+				// Got a match?
+				if(match) {
+					// If we're not skipping
+					// Or the pattern must not be skipped...
+					if (!skip || !p[1]) {
+						// Get the string to append by calling the corresponding function
+						append = p[2].call(this,match);
+						// Pattern function returned an error
+						if(append === null) {
+							append = "error: missing bracket in setvars";
+						// Otherwise, anything to append?
+						} else if(append) {
+							// We're in the THEN branch and the condition is met OR...
+							// We're in the ELSE branch and the condition is NOT met
+							if(bIF && (bTHEN && bTRUE || bELSE && !bTRUE)) {
+								// From now on we're skipping
+								skip = 1;
+							}
+						}
+						if(append !== false) {
+							// Remember what we were appending
+							last = append;
+						}
+					}
+					next = p[1] === 2;
+					// Remove from string
+					vs = vs.substr(match[0].length);
+					// Only check until we got a matching pattern, then start over with first pattern
+					return false;
 				}
-				// Cut off matched bits
-				vs = vs.substr(match[0].length);
+			});
+			// Anything to append?
+			if (append) {
+				// If we're in an IF clause
+				if(bIF) {
+					// Add to collected condition
+					collect += append;
+				// Otherwise, only append if we're not skipping...
+				} else if(!skip) {
+					// Add to value
+					value += append;
+				}
 			}
-			// no match?
-			if (vs === was) {
-				// Find next empty space
-				i = vs.indexOf(" ");
-				// Cut off
-				vs = i < 0 ? "" : vs.substr(i+1);
+			// Outside an IF clause if we had a matching pattern that would yield something
+			if(!bIF && next) {
+				// Only skip once
+				skip = 0;
+			}
+			// Nothing changed?
+			if(was === vs) {
+				// Error, this definition string is not working with our pattern matching
+				value = "error: invalid setvars syntax";
+				// We're done
+				vs = "";
 			}
 		}
 		// Write that variable, after all

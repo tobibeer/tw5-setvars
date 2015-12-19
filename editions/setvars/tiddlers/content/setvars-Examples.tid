@@ -1,6 +1,7 @@
 created: 20151209092945086
 creator: Tobias Beer
-modified: 20151218135529677
+modified: 20151218221617104
+modifier: Tobias Beer
 tags: 
 title: setvars-Examples
 type: text/vnd.tiddlywiki
@@ -144,11 +145,11 @@ bar[-1] \ = \
 ```
 
 <$macrocall $name="`" text="""<$setvars
-	foo="hi \, \ me \! \ nice \<br>\ [list[2,3]]"
+	foo="hi \, [[\ me \]]! \ nice \<br>\ [list[2,3][][ ✦ ]]"
 		_hi="Hi"
 		_me={{!!title}}
 		_nice=<<nice>>
-		_list= "1 => [all[current]]"
+		_list= "a test [all[current]]"
 	bar="hi \, again! ;-)\">
 <<foo>><br><<bar>>
 </$setvars>"""/>

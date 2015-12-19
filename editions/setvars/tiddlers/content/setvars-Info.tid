@@ -1,6 +1,7 @@
 created: 20151209131321187
 creator: Tobias Beer
-modified: 20151209131437072
+modified: 20151219000240645
+modifier: Tobias Beer
 tags: 
 title: setvars-Info
 type: text/vnd.tiddlywiki
@@ -8,4 +9,5 @@ type: text/vnd.tiddlywiki
 The plugin $:/plugins/tobibeer/setvars provides:
 
 ; `<$setvars/>`
-: a widget to declare a bunch of variables in one go while joining a range of attribute values
+: a widget to declare multiple variables while joining a range of attribute values
+: allows basic [[conditional expressions|setvars-Conditionals]] using OR logic or IF clauses

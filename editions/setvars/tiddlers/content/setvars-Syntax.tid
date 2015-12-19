@@ -1,6 +1,7 @@
 created: 20151209131525981
 creator: Tobias Beer
-modified: 20151218135143688
+modified: 20151219000438913
+modifier: Tobias Beer
 tags: 
 title: setvars-Syntax
 type: text/vnd.tiddlywiki
@@ -19,6 +20,10 @@ All put together, this is the result of it:
 <<foo>>
 </$setvars>
 """/>
+
+!! Conditionals
+
+The widget allows to evaluate basic conditional statements and set variables accordingly. For details see [[conditionals|setvars-Conditionals]].
 
 !! Variable Declaration
 
