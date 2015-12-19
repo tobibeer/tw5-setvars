@@ -2,7 +2,7 @@
     "title": "$:/plugins/tobibeer/setvars",
     "description": "Set multiple variables joining attributes and conditionals",
     "author": "Tobias Beer",
-    "version": "0.5.5",
+    "version": "0.5.6",
     "core-version": ">=5.1.9",
     "source": "https://github.com/tobibeer/tw5-setvars",
     "documentation": "https://tobibeer.github.io/tw5-setvars",

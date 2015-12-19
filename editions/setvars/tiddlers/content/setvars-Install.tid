@@ -7,6 +7,11 @@ modified: 20151209160745843
 
 !! Version History
 
+; 0.5.6 2015-12-19
+: simplified conditionals
+: removed unnecessary ternary style clauses
+; 0.5.5 2015-12-18
+: conditionals
 ; 0.5.2 2015-12-18
 : bugfix for stringifying single values as a filter
 ; 0.5.1 2015-12-09

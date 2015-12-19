@@ -164,12 +164,11 @@ SetVarsWidget.prototype.execute = function() {
 	});
 	// Loop all variables to be set
 	$tw.utils.each(self.set,function(vars,name) {
-		var collect,next,was,
-			bIF,bTRUE,bTHEN,bELSE,hadTHEN,
+		var bIF,bTRUE,collect,next,was,
 			// The last value we had, was none
 			last="",
-			// Not skipping
-			skip=0,
+			// Not skipping anything
+			skip=0,skipIF=0,
 			// Init  variable value
 			value="",
 			// Copy vars string
@@ -199,67 +198,56 @@ SetVarsWidget.prototype.execute = function() {
 					if(match[1].substr(0,2).toLowerCase() === "if") {
 						// Set IF clause flag
 						bIF = 1;
-						// Reset flags
-						bTRUE = bTHEN = bELSE = hadTHEN = skip = 0;
-						// Start collecting
-						collect = "";
+						// If already skipping
+						if(skip){
+							// Skip entire IF clause
+							skipIF = 1;
+						// Otherwise
+						} else {
+							// Reset flags
+							bTRUE = skip = 0;
+							// Start collecting
+							collect = "";
+						}
 					} else {
 						// Switch matches
 						switch (match[1]) {
 							// ORing values, works within or outside an IF clause
 							case "||":
 								// Already got a collected value?
-								if(last && last.length) {
+								if(last.length) {
 									// Start skipping
 									skip = 1;
 								}
 								break;
 							// Done with the IF clause condition
 							case "?":
-								// Only if we're in an IF clause
-								if(bIF) {
-									// Condition non empty? => then it is met
+								// Only inside IF clause and not skipping
+								if(bIF && !skipIF) {
+									// Condition met if non-empty
 									bTRUE = collect.length;
-									// Now we're in the THEN branch
-									bTHEN = 1;
-									// Reset skipping
-									skip = 0;
+									// Skip if condition not met
+									skip = !bTRUE;
 									// Start collecting
-									collect =last = "";
-								}
-								break;
-							// Done with the THEN branch of the IF clause
-							case ":":
-								// Only if we're in an IF clause
-								if(bIF) {
-									// Start ELSE branch and remember that we had a THEN branch
-									bELSE = hadTHEN = 1;
-									// Was IF clause condition true?
-									if(bTRUE) {
-										// Add collector to value
-										value += collect;
-									}
-									// End THEN branch
-									bTHEN = skip = 0;
-									// Start collecting
-									collect = last = "";
+									collect = "";
 								}
 								break;
 							// Done with the IF clause
 							case ")":
-								// Only if we were in an IF clause
+								// Only inside IF clause
 								if(bIF) {
-									// Was IF clause condition false?
-									// OR did we never have a THEN branch
-									if(!bTRUE || !hadTHEN) {
+									// When IF clause condition true
+									if(bTRUE) {
 										// Add collector to value
 										value += collect;
 									}
 									// Reset flags
-									bIF = bTRUE = bTHEN = bELSE = skip = 0;
+									bIF = bTRUE = skip = 0;
 									// Start collecting anew
-									collect = ""; last = "";
+									collect = "";
 								}
+								// In any case, stop skipping IF
+								skipIF = 0;
 								break;
 							}
 						}
@@ -318,14 +306,6 @@ SetVarsWidget.prototype.execute = function() {
 							append = "error: missing bracket in setvars";
 						// Otherwise, anything to append?
 						} else if(append) {
-							// We're in the THEN branch and the condition is met OR...
-							// We're in the ELSE branch and the condition is NOT met
-							if(bIF && (bTHEN && bTRUE || bELSE && !bTRUE)) {
-								// From now on we're skipping
-								skip = 1;
-							}
-						}
-						if(append !== false) {
 							// Remember what we were appending
 							last = append;
 						}

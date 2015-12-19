@@ -1,6 +1,6 @@
 created: 20151218221559291
 creator: Tobias Beer
-modified: 20151219002133951
+modified: 20151219223130708
 modifier: Tobias Beer
 tags: 
 title: setvars-Conditionals
@@ -9,12 +9,15 @@ type: text/vnd.tiddlywiki
 With ''setvar'' you can use basic conditionals using OR logic or IF clauses as follows:
 
 ; OR
-: `this || that || another`
+: `this || that || else`
 : takes the first value that is non-empty and then stops
 ; IF
-: `IF( condition ? then-value : else-value )`
+: `IF( condition ? then-value )`
 : the condition is interpreted as ''true'' if it evaluates to non-empty
 : you can use ''OR'' logic within any of the ''IF'' clause statements
+; IF ELSE
+: `IF( condition ? then-value ) || else-value`
+: simply append an OR clause to an IF clause to yield ELSE logic
 
 !! Examples
 
@@ -38,36 +41,53 @@ With ''setvar'' you can use basic conditionals using OR logic or IF clauses as f
 <<foo>>
 </$setvars>"""/>
 
-''basic IF clause''
+''IF true THEN this''
 
-<$macrocall $name="`" text="""<$setvars foo="if(true ? then : else)"
-	_true="1"
-	_then="true, after all"
-	_else="not true at all">
+<$macrocall $name="`" text="""<$setvars foo="if(true ? then) great"
+	_true="yes"
+	_then="this"
+	_great=" => was true">
 <<foo>>
 </$setvars>"""/>
 
-''embedded IF clause''
+''IF true THEN this OR that''
 
-<$macrocall $name="`" text="""<$setvars foo="\This is \
-if ( true ? then : else )
-right"
-	_true="1"
-	_then="true, after all"
-	_else="not true at all"
-	_right=". Right?!">
+<$macrocall $name="`" text="""<$setvars foo="if(true ? then) || or more"
+	_true="yes"
+	_then="this"
+	_or="that"
+	_more=" => not the OR value">
 <<foo>>
 </$setvars>"""/>
 
-''to OR and to IF''
+''IF false THEN this OR that''
 
-<$macrocall $name="`" text="""<$setvars foo="bar
-if(true||or||void?then:else||bar)
-\. Or is it \ true||then \?\"
+<$macrocall $name="`" text="""<$setvars foo="if(true ? then) || or more"
 	_true=""
-	_or=""
-	_then="true, after all"
-	_else="not true at all"
-	_bar="This is ">
+	_then="this"
+	_or="that"
+	_more=" => is something else">
+<<foo>>
+</$setvars>"""/>
+
+''IF true THEN this OR IF true THEN that''
+
+<$macrocall $name="`" text="""<$setvars foo="if(this ? then) || if(that ? else) more"
+	_this="yes"
+	_then="this "
+	_that="yes"
+	_else="that "
+	_more="=> shows the initial statement was true">
+<<foo>>
+</$setvars>"""/>
+
+''IF false THEN this OR IF true THEN that''
+
+<$macrocall $name="`" text="""<$setvars foo="if(this ? then) || if(that ? else) more"
+	_this=""
+	_then="this "
+	_that="or"
+	_else="that "
+	_more="=> shows the initial statement was not true">
 <<foo>>
 </$setvars>"""/>
