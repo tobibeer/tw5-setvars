@@ -11,3 +11,5 @@ The plugin $:/plugins/tobibeer/setvars provides:
 ; `<$setvars/>`
 : a widget to declare multiple variables while joining a range of attribute values
 : allows basic [[conditional expressions|setvars-Conditionals]] using OR logic or IF clauses
+
+<<plugin-docs-cp setvars>>

@@ -1,0 +1,73 @@
+created: 20151218221559291
+creator: Tobias Beer
+modified: 20151219002133951
+modifier: Tobias Beer
+tags: 
+title: setvars-Conditionals
+type: text/vnd.tiddlywiki
+
+With ''setvar'' you can use basic conditionals using OR logic or IF clauses as follows:
+
+; OR
+: `this || that || another`
+: takes the first value that is non-empty and then stops
+; IF
+: `IF( condition ? then-value : else-value )`
+: the condition is interpreted as ''true'' if it evaluates to non-empty
+: you can use ''OR'' logic within any of the ''IF'' clause statements
+
+!! Examples
+
+''simple OR''
+
+<$macrocall $name="`" text="""<$setvars foo="only || ignore \ and that\"
+	_only="this"
+	_ignore="nobody want's me">
+<<foo>>
+</$setvars>"""/>
+
+''lots of OR''
+
+<$macrocall $name="`" text="""<$setvars foo="hey no || false || finally || ignore stop"
+	_hey="Hey, you. "
+	_no=<<doesntExistAtAll>>
+	_false={{!!not-a-field-at-all}}
+	_finally="Gotcha! "
+	_ignore="nobody want's me, still"
+	_stop="Stop messing about!">
+<<foo>>
+</$setvars>"""/>
+
+''basic IF clause''
+
+<$macrocall $name="`" text="""<$setvars foo="if(true ? then : else)"
+	_true="1"
+	_then="true, after all"
+	_else="not true at all">
+<<foo>>
+</$setvars>"""/>
+
+''embedded IF clause''
+
+<$macrocall $name="`" text="""<$setvars foo="\This is \
+if ( true ? then : else )
+right"
+	_true="1"
+	_then="true, after all"
+	_else="not true at all"
+	_right=". Right?!">
+<<foo>>
+</$setvars>"""/>
+
+''to OR and to IF''
+
+<$macrocall $name="`" text="""<$setvars foo="bar
+if(true||or||void?then:else||bar)
+\. Or is it \ true||then \?\"
+	_true=""
+	_or=""
+	_then="true, after all"
+	_else="not true at all"
+	_bar="This is ">
+<<foo>>
+</$setvars>"""/>

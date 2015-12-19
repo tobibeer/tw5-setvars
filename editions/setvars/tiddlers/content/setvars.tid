@@ -8,5 +8,3 @@ title: setvars
 type: text/vnd.tiddlywiki
 
 <<plugin-docs setvars>>
-
-<<plugin-docs-cp setvars>>
