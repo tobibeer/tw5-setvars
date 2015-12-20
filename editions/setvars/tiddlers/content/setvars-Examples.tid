@@ -1,6 +1,6 @@
 created: 20151209092945086
 creator: Tobias Beer
-modified: 20151218221617104
+modified: 20151220100800240
 modifier: Tobias Beer
 tags: 
 title: setvars-Examples
@@ -137,6 +137,18 @@ bar[-1] \ = \
 <$macrocall $name="`" text="""<$setvars foo="bar[1] \ = \ bar[-n]" _bar="a b c d e">
 <<foo>>
 </$setvars>"""/>
+
+!! Macro Example
+
+// This macro routes a link to tiddlywiki.com should there not be a local tiddler by that name while also allowing you to use a pretty title://
+
+<<source "$://macro/route">>
+
+@@.note
+''Note:'' Notice how the link variable refers to the title variable declared before it!
+@@
+
+<$macrocall $name="`" text="""<<route TextReferences "text-reference">>"""/>
 
 !! Full Circle
 

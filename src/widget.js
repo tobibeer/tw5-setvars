@@ -148,22 +148,25 @@ SetVarsWidget.prototype.execute = function() {
 				result[0];
 		};
 	// Initialize objects holding the defined variable configuration
-	this.set = {};
-	this.use = {};
+	this.$ = {
+		vars: {},
+		attr: {},
+		set: {}
+	}
 	// Loop all attributes
 	$tw.utils.each(this.attributes,function(val,key) {
 		// Is this one used at a variable declaration?
 		if(key.charAt(0) === "_") {
 			// Store at "use" configurations
-			self.use[key.substr(1)] = val;
+			self.$.attr[key.substr(1)] = val;
 		// Is this a variable declaration?
 		} else {
 			// Store as "set" declarations
-			self.set[key] = val;
+			self.$.vars[key] = val;
 		}
 	});
 	// Loop all variables to be set
-	$tw.utils.each(self.set,function(vars,name) {
+	$tw.utils.each(self.$.vars,function(vars,name) {
 		var bIF,bTRUE,collect,next,was,
 			// The last value we had, was none
 			last="",
@@ -263,7 +266,12 @@ SetVarsWidget.prototype.execute = function() {
 				// 5: empty value
 				[/^(\[)?(\w+)(?:\[(-?\d*|-?n)(?:,(-?\d*|-?n))?\])?(?:\[([^\]]*)\])?(?:\[([^\]]*)\])?(\])?/, 2, function(match) {
 					// Get the value for the attribute
-					var v = self.use[match[2]];
+					var v = self.$.attr[match[2]];
+					// If not defined
+					if (v === undefined) {
+						// Check for computed variable
+						v = self.$.set[match[2]];
+					}
 					// Is it non-empty?
 					if(v) {
 						// Do we want a filter?
@@ -342,6 +350,8 @@ SetVarsWidget.prototype.execute = function() {
 				vs = "";
 			}
 		}
+		// Remember value
+		self.$.set[name] = value;
 		// Write that variable, after all
 		self.setVariable(name,value);
 	});

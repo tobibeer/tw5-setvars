@@ -1,0 +1,18 @@
+created: 20151220100654081
+creator: Tobias Beer
+modified: 20151220101247976
+tags: $:/tags/Macro
+title: $://macro/route
+type: text/vnd.tiddlywiki
+
+\define route(title,pretty)
+<$setvars
+_exists="[[$title$]is[tiddler]]"
+_not="[[$title$]!is[tiddler]]"
+title="if( \$pretty$\ ? \$pretty$\ ) || \$title$\"
+link="
+if( [exists] ? \[[\title\|$title$]]\ ) ||
+if( [not] ? \[ext[\title\|http://tiddlywiki.com#$title$]]\ )">
+<<link>>
+</$setvars>
+\end
