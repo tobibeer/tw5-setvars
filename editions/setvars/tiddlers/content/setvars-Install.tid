@@ -1,20 +1,23 @@
-title: setvars-Install
 created: 20151209141659104
 creator: Tobias Beer
-modified: 20151209160745843
+modified: 20151220101951121
+title: setvars-Install
+type: text/vnd.tiddlywiki
 
 <<plugin-install setvars>>
 
 !! Version History
 
-; 0.5.6 2015-12-19
+; 0.5.7 / 2015-12-20
+: refer to variables previously declared in the same setvars widget
+; 0.5.6 / 2015-12-19
 : simplified conditionals
 : removed unnecessary ternary style clauses
-; 0.5.5 2015-12-18
+; 0.5.5 / 2015-12-18
 : conditionals
-; 0.5.2 2015-12-18
+; 0.5.2 / 2015-12-18
 : bugfix for stringifying single values as a filter
-; 0.5.1 2015-12-09
+; 0.5.1 / 2015-12-09
 : removed leftover console log statements
-; 0.5.0 2015-12-09
+; 0.5.0 / 2015-12-09
 : initial release
