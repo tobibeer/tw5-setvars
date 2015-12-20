@@ -1,6 +1,6 @@
 created: 20151220100654081
 creator: Tobias Beer
-modified: 20151220101247976
+modified: 20151220164716300
 tags: $:/tags/Macro
 title: $://macro/route
 type: text/vnd.tiddlywiki
@@ -12,7 +12,6 @@ _not="[[$title$]!is[tiddler]]"
 title="if( \$pretty$\ ? \$pretty$\ ) || \$title$\"
 link="
 if( [exists] ? \[[\title\|$title$]]\ ) ||
-if( [not] ? \[ext[\title\|http://tiddlywiki.com#$title$]]\ )">
-<<link>>
-</$setvars>
+if( [not] ? \[ext[\title\|http://tiddlywiki.com#$title$]]\ )"
+><<link>></$setvars>
 \end

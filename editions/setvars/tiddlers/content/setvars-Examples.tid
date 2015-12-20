@@ -1,6 +1,6 @@
 created: 20151209092945086
 creator: Tobias Beer
-modified: 20151220100800240
+modified: 20151220164657299
 modifier: Tobias Beer
 tags: 
 title: setvars-Examples
@@ -148,7 +148,7 @@ bar[-1] \ = \
 ''Note:'' Notice how the link variable refers to the title variable declared before it!
 @@
 
-<$macrocall $name="`" text="""<<route TextReferences "text-reference">>"""/>
+<$macrocall $name="`" text="""More on <<route TextReference "text-references">>."""/>
 
 !! Full Circle
 
@@ -157,11 +157,11 @@ bar[-1] \ = \
 ```
 
 <$macrocall $name="`" text="""<$setvars
+	_hi="Hi"
+	_me={{!!title}}
+	_nice=<<nice>>
+	_list= "a test [all[current]]"
 	foo="hi \, [[\ me \]]! \ nice \<br>\ [list[2,3][][ ✦ ]]"
-		_hi="Hi"
-		_me={{!!title}}
-		_nice=<<nice>>
-		_list= "a test [all[current]]"
 	bar="hi \, again! ;-)\">
 <<foo>><br><<bar>>
 </$setvars>"""/>
