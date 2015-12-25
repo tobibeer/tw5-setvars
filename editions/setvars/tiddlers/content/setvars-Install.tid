@@ -1,6 +1,7 @@
 created: 20151209141659104
 creator: Tobias Beer
-modified: 20151220101951121
+modified: 20151225232432551
+modifier: Tobias Beer
 title: setvars-Install
 type: text/vnd.tiddlywiki
 
@@ -8,6 +9,8 @@ type: text/vnd.tiddlywiki
 
 !! Version History
 
+; 0.5.8 / 2015-12-25
+: added [[$refresh|setvars-Refresh]] to allow recalculating filter attributes and force refresh on changes
 ; 0.5.7 / 2015-12-20
 : refer to variables previously declared in the same setvars widget
 ; 0.5.6 / 2015-12-19
