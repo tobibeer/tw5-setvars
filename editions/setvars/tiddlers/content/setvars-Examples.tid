@@ -1,6 +1,6 @@
 created: 20151209092945086
 creator: Tobias Beer
-modified: 20151220164657299
+modified: 20151225231827543
 modifier: Tobias Beer
 tags: 
 title: setvars-Examples
@@ -74,7 +74,7 @@ mumble="frotz \ => \ gronk"
 <<foo>>
 </$setvars>"""/>
 
-'' returns the last item, as does foo[-1]''
+'' return the last item''
 
 <$macrocall $name="`" text="""<$setvars foo="
 bar[n] \ = \
