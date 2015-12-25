@@ -2,7 +2,7 @@
     "title": "$:/plugins/tobibeer/setvars",
     "description": "Set multiple, complex variables based on attributes, filters, or conditionals",
     "author": "Tobias Beer",
-    "version": "0.5.7",
+    "version": "0.5.8",
     "core-version": ">=5.1.9",
     "source": "https://github.com/tobibeer/tw5-setvars",
     "documentation": "https://tobibeer.github.io/tw5-setvars",
