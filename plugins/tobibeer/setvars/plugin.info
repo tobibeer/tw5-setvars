@@ -1,6 +1,6 @@
 {
     "title": "$:/plugins/tobibeer/setvars",
-    "description": "Set multiple variables joining attributes and conditionals",
+    "description": "Set multiple, complex variables based on attributes, filters, or conditionals",
     "author": "Tobias Beer",
     "version": "0.5.7",
     "core-version": ">=5.1.9",

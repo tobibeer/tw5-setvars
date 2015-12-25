@@ -147,228 +147,277 @@ SetVarsWidget.prototype.execute = function() {
 				// Not really an array => get value as first item
 				result[0];
 		};
-	// Initialize objects holding the defined variable configuration
-	this.$ = {
-		vars: {},
-		attr: {},
-		set: {}
+	// Not during refresh
+	if(!this.refreshing){
+		// Initialize refreshing
+		this.refreshing = 0;
+		// Initialize objects holding the defined variable configuration
+		this.$ = {
+			vars: {},
+			attr: {},
+			set: {}
+		};
+		// Loop all attributes
+		$tw.utils.each(this.attributes,function(val,key) {
+			// Do we want to refresh vars?
+			if(key === "$refresh") {
+				// Remember
+				self.refreshAll = 1;
+			// Is this one used at a variable declaration?
+			} else if(key.charAt(0) === "_") {
+				// Store at "use" configurations
+				self.$.attr[key.substr(1)] = val;
+			// Is this a variable declaration?
+			} else {
+				// Store as "set" declarations
+				self.$.vars[key] = val;
+			}
+		});
 	}
-	// Loop all attributes
-	$tw.utils.each(this.attributes,function(val,key) {
-		// Is this one used at a variable declaration?
-		if(key.charAt(0) === "_") {
-			// Store at "use" configurations
-			self.$.attr[key.substr(1)] = val;
-		// Is this a variable declaration?
-		} else {
-			// Store as "set" declarations
-			self.$.vars[key] = val;
-		}
-	});
-	// Loop all variables to be set
-	$tw.utils.each(self.$.vars,function(vars,name) {
-		var bIF,bTRUE,collect,next,was,
-			// The last value we had, was none
-			last="",
-			// Not skipping anything
-			skip=0,skipIF=0,
-			// Init  variable value
-			value="",
-			// Copy vars string
-			vs = vars,
-			// Any patterns we're going to match as array of configurations being arrays of...
-				// 0: the pattern regex
-				// 1: if truthy, this pattern is skippable
-				// 2: a function evaluating the pattern match
-				//	  => returns  the string to be appended to the value
-			patterns = [
-				// Skip whitespace
-				[/^\s+/, 1, function() {
-					return false;
-				}],
-				// A literal
-				[/^\\([^\\]*)\\/, 2, function(match) {
-					// Take as is
-					return match[1];
-				}],
-				// IF clause as...
-				// if( foo || bar ? baz || mumble : frotz || gronk)
-				// || => OR => (optional) take the first non-empty condition from left to right
-				// ? => end of IF clause condition => met if collector non-empty
-				// : => end of THEN branch => (optional) take this output when IF clause condition is met
-				// ) => end of ELSE branch => (optional) take this output when IF clause condition is NOT met
-				[/^(if\s*\(|\?|\:|\|\||\))/i, 0, function(match) {
-					if(match[1].substr(0,2).toLowerCase() === "if") {
-						// Set IF clause flag
-						bIF = 1;
-						// If already skipping
-						if(skip){
-							// Skip entire IF clause
-							skipIF = 1;
-						// Otherwise
+	// Only once during refresh
+	if(this.refreshing < 2) {
+		// Loop all variables to be set
+		$tw.utils.each(self.$.vars,function(vars,name) {
+			var bIF,bTRUE,collect,next,was,
+				// The last value we had, was none
+				last="",
+				// Not skipping anything
+				skip=0,skipIF=0,
+				// Init  variable value
+				value="",
+				// Copy vars string
+				vs = vars,
+				// Any patterns we're going to match as array of configurations being arrays of...
+					// 0: the pattern regex
+					// 1: if truthy, this pattern is skippable
+					// 2: a function evaluating the pattern match
+					//	  => returns  the string to be appended to the value
+				patterns = [
+					// Skip whitespace
+					[/^\s+/, 1, function() {
+						return false;
+					}],
+					// A literal
+					[/^\\([^\\]*)\\/, 2, function(match) {
+						// Take as is
+						return match[1];
+					}],
+					// IF clause as...
+					// if( foo || bar ? baz || mumble : frotz || gronk)
+					// || => OR => (optional) take the first non-empty condition from left to right
+					// ? => end of IF clause condition => met if collector non-empty
+					// : => end of THEN branch => (optional) take this output when IF clause condition is met
+					// ) => end of ELSE branch => (optional) take this output when IF clause condition is NOT met
+					[/^(if\s*\(|\?|\:|\|\||\))/i, 0, function(match) {
+						if(match[1].substr(0,2).toLowerCase() === "if") {
+							// Set IF clause flag
+							bIF = 1;
+							// If already skipping
+							if(skip){
+								// Skip entire IF clause
+								skipIF = 1;
+							// Otherwise
+							} else {
+								// Reset flags
+								bTRUE = skip = 0;
+								// Start collecting
+								collect = "";
+							}
 						} else {
-							// Reset flags
-							bTRUE = skip = 0;
-							// Start collecting
-							collect = "";
-						}
-					} else {
-						// Switch matches
-						switch (match[1]) {
-							// ORing values, works within or outside an IF clause
-							case "||":
-								// Already got a collected value?
-								if(last.length) {
-									// Start skipping
-									skip = 1;
-								}
-								break;
-							// Done with the IF clause condition
-							case "?":
-								// Only inside IF clause and not skipping
-								if(bIF && !skipIF) {
-									// Condition met if non-empty
-									bTRUE = collect.length;
-									// Skip if condition not met
-									skip = !bTRUE;
-									// Start collecting
-									collect = "";
-								}
-								break;
-							// Done with the IF clause
-							case ")":
-								// Only inside IF clause
-								if(bIF) {
-									// When IF clause condition true
-									if(bTRUE) {
-										// Add collector to value
-										value += collect;
+							// Switch matches
+							switch (match[1]) {
+								// ORing values, works within or outside an IF clause
+								case "||":
+									// Already got a collected value?
+									if(last.length) {
+										// Start skipping
+										skip = 1;
 									}
-									// Reset flags
-									bIF = bTRUE = skip = 0;
-									// Start collecting anew
-									collect = "";
+									break;
+								// Done with the IF clause condition
+								case "?":
+									// Only inside IF clause and not skipping
+									if(bIF && !skipIF) {
+										// Condition met if non-empty
+										bTRUE = collect.length;
+										// Skip if condition not met
+										skip = !bTRUE;
+										// Start collecting
+										collect = "";
+									}
+									break;
+								// Done with the IF clause
+								case ")":
+									// Only inside IF clause
+									if(bIF) {
+										// When IF clause condition true
+										if(bTRUE) {
+											// Add collector to value
+											value += collect;
+										}
+										// Reset flags
+										bIF = bTRUE = skip = 0;
+										// Start collecting anew
+										collect = "";
+									}
+									// In any case, stop skipping IF
+									skipIF = 0;
+									break;
 								}
-								// In any case, stop skipping IF
-								skipIF = 0;
-								break;
+							}
+						return false;
+					}],
+					// Looks for definition to evaluate a value or filter
+					// Grabs all the start / end / empty / join options
+					// Using these capture groups:
+					// 1: starting bracket 6: closing braket for filter
+					// 2: the name of the attribute
+					// 3: start number
+					// 4: number of titles to get
+					// 5: empty value
+					[/^(\[)?(\w+)(?:\[(-?\d*|-?n)(?:,(-?\d*|-?n))?\])?(?:\[([^\]]*)\])?(?:\[([^\]]*)\])?(\])?/, 2, function(match) {
+						// Get the value for the attribute
+						var v = self.$.attr[match[2]];
+						// If not defined
+						if (v === undefined) {
+							// Check for computed variable
+							v = self.$.set[match[2]];
+						}
+						// Is it non-empty?
+						if(v) {
+							// Do we want a filter?
+							if(match[1] && match[7]) {
+								// Retrieve the value from a filter
+								v = getElements(v,true,match);
+							// We don't want a filter?
+							} else if(!match[1] && !match[7]) {
+								// Retrieve the value from a string
+								v = getElements(v,false,match);
+							// We have just an opening or a closing bracket?
+							} else {
+								// Wrong syntax
+								v = null;
 							}
 						}
-					return false;
-				}],
-				// Looks for definition to evaluate a value or filter
-				// Grabs all the start / end / empty / join options
-				// Using these capture groups:
-				// 1: starting bracket 6: closing braket for filter
-				// 2: the name of the attribute
-				// 3: start number
-				// 4: number of titles to get
-				// 5: empty value
-				[/^(\[)?(\w+)(?:\[(-?\d*|-?n)(?:,(-?\d*|-?n))?\])?(?:\[([^\]]*)\])?(?:\[([^\]]*)\])?(\])?/, 2, function(match) {
-					// Get the value for the attribute
-					var v = self.$.attr[match[2]];
-					// If not defined
-					if (v === undefined) {
-						// Check for computed variable
-						v = self.$.set[match[2]];
-					}
-					// Is it non-empty?
-					if(v) {
-						// Do we want a filter?
-						if(match[1] && match[7]) {
-							// Retrieve the value from a filter
-							v = getElements(v,true,match);
-						// We don't want a filter?
-						} else if(!match[1] && !match[7]) {
-							// Retrieve the value from a string
-							v = getElements(v,false,match);
-						// We have just an opening or a closing bracket?
-						} else {
-							// Wrong syntax
-							v = null;
-						}
-					}
-					return v;
-				}]
-			];
+						return v;
+					}]
+				];
 
-		// So long as we have a definition string...
-		while(vs.length){
-			// Remember what it was before pattern matching
-			was = vs;
-			// Reset string to append
-			var append = "";
-			// Loop patterns
-			$tw.utils.each(patterns, function(p) {
-				// Test pattern against current remainder
-				var match = p[0].exec(vs);
-				// Got a match?
-				if(match) {
-					// If we're not skipping
-					// Or the pattern must not be skipped...
-					if (!skip || !p[1]) {
-						// Get the string to append by calling the corresponding function
-						append = p[2].call(this,match);
-						// Pattern function returned an error
-						if(append === null) {
-							append = "error: missing bracket in setvars";
-						// Otherwise, anything to append?
-						} else if(append) {
-							// Remember what we were appending
-							last = append;
+			// So long as we have a definition string...
+			while(vs.length){
+				// Remember what it was before pattern matching
+				was = vs;
+				// Reset string to append
+				var append = "";
+				// Loop patterns
+				$tw.utils.each(patterns, function(p) {
+					// Test pattern against current remainder
+					var match = p[0].exec(vs);
+					// Got a match?
+					if(match) {
+						// If we're not skipping
+						// Or the pattern must not be skipped...
+						if (!skip || !p[1]) {
+							// Get the string to append by calling the corresponding function
+							append = p[2].call(this,match);
+							// Pattern function returned an error
+							if(append === null) {
+								append = "error: missing bracket in setvars";
+							// Otherwise, anything to append?
+							} else if(append) {
+								// Remember what we were appending
+								last = append;
+							}
 						}
+						next = p[1] === 2;
+						// Remove from string
+						vs = vs.substr(match[0].length);
+						// Only check until we got a matching pattern, then start over with first pattern
+						return false;
 					}
-					next = p[1] === 2;
-					// Remove from string
-					vs = vs.substr(match[0].length);
-					// Only check until we got a matching pattern, then start over with first pattern
-					return false;
+				});
+				// Anything to append?
+				if (append) {
+					// If we're in an IF clause
+					if(bIF) {
+						// Add to collected condition
+						collect += append;
+					// Otherwise, only append if we're not skipping...
+					} else if(!skip) {
+						// Add to value
+						value += append;
+					}
 				}
-			});
-			// Anything to append?
-			if (append) {
-				// If we're in an IF clause
-				if(bIF) {
-					// Add to collected condition
-					collect += append;
-				// Otherwise, only append if we're not skipping...
-				} else if(!skip) {
-					// Add to value
-					value += append;
+				// Outside an IF clause if we had a matching pattern that would yield something
+				if(!bIF && next) {
+					// Only skip once
+					skip = 0;
+				}
+				// Nothing changed?
+				if(was === vs) {
+					// Error, this definition string is not working with our pattern matching
+					value = "error: invalid setvars syntax";
+					// We're done
+					vs = "";
 				}
 			}
-			// Outside an IF clause if we had a matching pattern that would yield something
-			if(!bIF && next) {
-				// Only skip once
-				skip = 0;
-			}
-			// Nothing changed?
-			if(was === vs) {
-				// Error, this definition string is not working with our pattern matching
-				value = "error: invalid setvars syntax";
-				// We're done
-				vs = "";
-			}
-		}
-		// Remember value
-		self.$.set[name] = value;
-		// Write that variable, after all
-		self.setVariable(name,value);
-	});
-	// Construct the child widgets
-	this.makeChildWidgets();
+			// Remember value
+			self.$.set[name] = value;
+			// Write that variable, after all
+			self.setVariable(name,value);
+		});
+	}
+	// If not recomputing for refresh or final refreshSelf
+	if(!this.refreshing || this.refreshing === 2) {
+		// Construct the child widgets
+		this.makeChildWidgets();
+	}
 };
 
 /*
 Refresh the widget by ensuring our attributes are up to date
 */
 SetVarsWidget.prototype.refresh = function(changedTiddlers) {
-	var changedAttributes = this.computeAttributes();
+	var changed=0,set,
+		self = this,
+		changedAttributes = this.computeAttributes();
 	// Any attributes changed?
 	if(Object.keys(changedAttributes).length) {
 		// Gotta refresh
 		this.refreshSelf();
 		return true;
+	// Refreshing computations?
+	} else if (this.refreshAll) {
+		// Store current values
+		set = JSON.parse(JSON.stringify(this.$.set));
+		// Set flag to only compute
+		this.refreshing = 1;
+		// Execute
+		this.execute();
+		// Loop previously set vars
+		$tw.utils.each(
+			set,
+			// Check values for keys
+			function(val,key){
+				// If different than last value
+				if(val !== self.$.set[key]) {
+					// Changed indeed
+					changed = 1;
+					// No need for further testing
+					return false;
+				}
+			}
+		);
+		// Any changed variables?
+		if(changed) {
+			// Nest refresh stage
+			this.refreshing = 2;
+			// Refresh
+			this.refreshSelf();
+			return true;
+		}
+		// Reset refresn level
+		this.refreshing = 0;
 	}
 	// Refreshed if children refresh
 	return this.refreshChildren(changedTiddlers);

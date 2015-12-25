@@ -3,6 +3,7 @@
     "plugins": [
         "tiddlywiki/tiddlyweb",
         "tiddlywiki/filesystem",
+		"tobibeer/make",
         "tobibeer/setvars"
     ],
     "themes": [
