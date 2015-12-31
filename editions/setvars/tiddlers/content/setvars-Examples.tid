@@ -1,6 +1,6 @@
 created: 20151209092945086
 creator: Tobias Beer
-modified: 20151225231827543
+modified: 20151231140321221
 modifier: Tobias Beer
 tags: 
 title: setvars-Examples
@@ -140,7 +140,7 @@ bar[-1] \ = \
 
 !! Macro Example
 
-// This macro routes a link to tiddlywiki.com should there not be a local tiddler by that name while also allowing you to use a pretty title://
+// This macro routes a link to tiddlywiki.com should there not be a local tiddler by that name while encoding the title using the [[hash]] filter and also allowing you to use a pretty title://
 
 <<source "$://macro/route">>
 
@@ -148,7 +148,7 @@ bar[-1] \ = \
 ''Note:'' Notice how the link variable refers to the title variable declared before it!
 @@
 
-<$macrocall $name="`" text="""More on <<route TextReference "text-references">>."""/>
+<$macrocall $name="`" text="""Want to <<route "Customise TiddlyWiki" "customize">> TiddlyWiki? Go check out my <<route Plugins plugins>>!"""/>
 
 !! Full Circle
 
