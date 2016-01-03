@@ -125,6 +125,26 @@ describe("Widget module", function() {
 		expect(wrapper.innerHTML).toBe("<p>baz</p>");
 	});
 
+	it("bracketed OR", function() {
+		// Construct the widget node
+		var text = "<$setvars foo='(bar || baz) || (mumble || frotz)' _bar='bar' _baz='baz' _mumble='mumble' _frotz='frotz'><<foo>></$setvars>"
+		var widgetNode = createWidgetNode(parseText(text,wiki),wiki);
+		// Render the widget node to the DOM
+		var wrapper = renderWidgetNode(widgetNode);
+		// Test the rendering
+		expect(wrapper.innerHTML).toBe("<p>bar</p>");
+	});
+
+	it("bracketed OR fallback", function() {
+		// Construct the widget node
+		var text = "<$setvars foo='(bar || baz) || (mumble || frotz)' _mumble='mumble' _frotz='frotz'><<foo>></$setvars>"
+		var widgetNode = createWidgetNode(parseText(text,wiki),wiki);
+		// Render the widget node to the DOM
+		var wrapper = renderWidgetNode(widgetNode);
+		// Test the rendering
+		expect(wrapper.innerHTML).toBe("<p>mumble</p>");
+	});
+
 	it("double OR", function() {
 		// Construct the widget node
 		var text = "<$setvars foo='bar || baz || mumble' _bar='bar' _baz='baz' _mumble='mumble'><<foo>></$setvars>"
