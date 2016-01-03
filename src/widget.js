@@ -178,7 +178,7 @@ SetVarsWidget.prototype.execute = function() {
 	if(this.refreshing < 2) {
 		// Loop all variables to be set
 		$tw.utils.each(self.$.vars,function(vars,name) {
-			var bIF,bTRUE,collect,next,was,
+			var bIF,bCOMPARE,bTRUE,collect,next,was,
 				// The last value we had, was none
 				last="",
 				// Not skipping anything
@@ -208,8 +208,9 @@ SetVarsWidget.prototype.execute = function() {
 					// ? => end of IF clause condition => met if collector non-empty
 					// : => end of THEN branch => (optional) take this output when IF clause condition is met
 					// ) => end of ELSE branch => (optional) take this output when IF clause condition is NOT met
-					[/^(if\s*\(|\?|\:|\|\||\))/i, 0, function(match) {
-						if(match[1].substr(0,2).toLowerCase() === "if") {
+					[/^(if\s*\(|\(|\?|\|\||\)|==|!=)/i, 0, function(match) {
+						var m = match[1];
+						if(m.charAt(m.length-1) === "(") {
 							// Set IF clause flag
 							bIF = 1;
 							// If already skipping
@@ -222,10 +223,15 @@ SetVarsWidget.prototype.execute = function() {
 								bTRUE = skip = 0;
 								// Start collecting
 								collect = "";
+								// Single opening bracket?
+								if(m.length === 1) {
+									// Condition is met by default, no further evaluation
+									bTRUE = 1;
+								}
 							}
 						} else {
 							// Switch matches
-							switch (match[1]) {
+							switch (m) {
 								// ORing values, works within or outside an IF clause
 								case "||":
 									// Already got a collected value?
@@ -263,6 +269,15 @@ SetVarsWidget.prototype.execute = function() {
 									// In any case, stop skipping IF
 									skipIF = 0;
 									break;
+								// Comparison
+								case "==":
+								case "!=":
+									// Only inside IF clause
+									if(bIF) {
+										// Remember that we want to compare
+										bCOMPARE = m;
+									}
+									break;
 								}
 							}
 						return false;
@@ -298,6 +313,10 @@ SetVarsWidget.prototype.execute = function() {
 								// Wrong syntax
 								v = null;
 							}
+						// Undefined
+						} else {
+							// Interpret as empty string
+							v = "";
 						}
 						return v;
 					}]
@@ -324,11 +343,12 @@ SetVarsWidget.prototype.execute = function() {
 							if(append === null) {
 								append = "error: missing bracket in setvars";
 							// Otherwise, anything to append?
-							} else if(append) {
+							} else if(typeof append === "string") {
 								// Remember what we were appending
 								last = append;
 							}
 						}
+						// Remember whether or not we want to skip the pattern outside an if clause only
 						next = p[1] === 2;
 						// Remove from string
 						vs = vs.substr(match[0].length);
@@ -340,8 +360,28 @@ SetVarsWidget.prototype.execute = function() {
 				if (append) {
 					// If we're in an IF clause
 					if(bIF) {
-						// Add to collected condition
-						collect += append;
+						// When checking for (non-)equality
+						if(bCOMPARE) {
+							// Set last value to...
+							last = (
+								// Compare equals and collected value equal to append value OR
+								bCOMPARE === "==" && collect === append ||
+								// Compare not-equals and collected value not append value
+								bCOMPARE === "!=" && collect !== append
+							) ?
+								// Return literal true
+								"true" :
+								// Return nothing at all
+								"";
+							// Set collector to last
+							collect = last;
+							// Reset comparator
+							bCOMPARE = "";
+						// Not checking equality
+						} else {
+							// Add to collected condition
+							collect += append;
+						}
 					// Otherwise, only append if we're not skipping...
 					} else if(!skip) {
 						// Add to value
@@ -356,7 +396,7 @@ SetVarsWidget.prototype.execute = function() {
 				// Nothing changed?
 				if(was === vs) {
 					// Error, this definition string is not working with our pattern matching
-					value = "error: invalid setvars syntax";
+					value = "setvars error: invalid syntax";
 					// We're done
 					vs = "";
 				}

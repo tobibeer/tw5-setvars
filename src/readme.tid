@@ -12,11 +12,13 @@ _attr3="1 2 3"
 _attr4="[all[current]tagging[]]"
 var1="attr1 \ = literal = \ attr2"
 var2="attr3[n] \ \ [attr4[1,2][when-empty]] \ \ [attr3[][][ - ]]"
-var3="if(attr1 ? [attr4]) || attr3 attr2">
+var3="if(attr1 ? [attr4]) || attr3 attr2"
+var4="if(attr1 == attr2 ? attr3[1]) || [attr3[2]]">
 
 * <<var1>>
 * <<var2>>
 * <<var3>>
+* <<var4>>
 
 </$setvars>
 ```

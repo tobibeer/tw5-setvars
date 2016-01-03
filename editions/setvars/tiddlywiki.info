@@ -3,7 +3,9 @@
     "plugins": [
         "tiddlywiki/tiddlyweb",
         "tiddlywiki/filesystem",
+		"tobibeer/eval",
 		"tobibeer/make",
+		"tobibeer/math.js",
         "tobibeer/setvars"
     ],
     "themes": [

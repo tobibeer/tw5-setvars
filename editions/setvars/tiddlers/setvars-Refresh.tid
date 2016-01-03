@@ -1,18 +1,18 @@
 created: 20151225222715542
 creator: Tobias Beer
-modified: 20151225230739762
+modified: 20160103135456365
 modifier: Tobias Beer
 tags: 
 title: setvars-Refresh
 type: text/vnd.tiddlywiki
 
-The setvars widget evaluates filter expressions only when first rendered, not with every refresh event. In contrast to most all TiddlyWiki core widgets, so long as its text-reference or variable-attributes do not change, setvars will only compute variables once.
+The setvars widget evaluates any ''filter'' arguments only when first rendered, not with every refresh event. Therefore, so long as any text-reference- or variable-attributes do not change, setvars will only compute variables once.
 
 @@.note
 ''Note:'' To force setvars to recompute filter attributes and any dependent variables and to re-render upon changes to the filter outputs, set the attribute ''$refresh''.
 @@
 
-Compare the following examples that use the [[make]] filter to generate random numbers. The first example will not recompute the filter attribute `_now`:
+Compare the following examples that use the [[make]] filter to generate random numbers. The first example will not recompute the filter attribute `_random`:
 
 <$macrocall $name="`" text="""<$setvars _random="[[]make[random()]]" R="[random]">
 <$text text=<<R>>/>

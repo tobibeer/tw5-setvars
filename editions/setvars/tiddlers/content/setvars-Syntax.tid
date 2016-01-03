@@ -1,6 +1,6 @@
 created: 20151209131525981
 creator: Tobias Beer
-modified: 20151220100504636
+modified: 20160103124626927
 modifier: Tobias Beer
 tags: 
 title: setvars-Syntax
@@ -8,21 +8,21 @@ type: text/vnd.tiddlywiki
 
 Using the ''setvars'' widget is straight forward. For each desired variable, simply declare:
 
-; 1. A Variable Declaration
+; 1. Variable Attributes
+: prefixed with an underscore `_` and eventually replaced in the variable declaration:<br>`_bar="hello" _baz={{!!title}}`
+; 2. The Variable Declaration
 : specify which attributes and literals make up the variable:<br>`foo="bar baz"`
 : may contain literals enclosed in backslashes<br>`foo="bar \I will be a literal\ baz"`
-; 2. The Variable Attributes
-: prefixed with an underscore `_` and eventually replaced in the variable declaration:<br>`_bar="hello" _baz={{!!title}}`
 
 All put together, this is the result of it:
 
-<$macrocall $name="`" text="""<$setvars foo="bar \ \ baz" _bar="hello" _baz={{!!title}}>
-<<foo>>
+<$macrocall $name="`" text="""<$setvars _foo="hello" _bar={{!!title}} baz="foo \ \ bar">
+<<baz>>
 </$setvars>
 """/>
 
 @@.note
-''Note:'' Address a variable previously defined in the same ''setvars'' instance by its name. Hence, it is best to never use the same name for a variable and an attribute.
+''Note:'' You can address a variable previously defined in the same ''setvars'' instance by its name. Therefore, avoid using the same name for a variable and an attribute.
 @@
 
 !! Conditionals
@@ -57,11 +57,11 @@ Here's how you can use the above to construct variable declarations:
 ; [foo[1]]
 : evaluates ''_foo'' as a filter and returns the first item@@.demo-items ''a'' b c d e@@
 ; foo[2]
-: returns only the second item@@.demo-items a ''b'' c d e@@
+: returns only the 2nd item@@.demo-items a ''b'' c d e@@
 ; foo[2][fallback]
-: returns the second item or `fallback` if that is undefined@@.demo-items a ''b'' c d e@@
+: returns the 2nd item or `fallback` if that is undefined@@.demo-items a ''b'' c d e@@
 ; [foo[3][empty]]
-: evaluates as a filter and returns the third item or `empty` if undefined@@.demo-items a b ''c'' d e@@
+: evaluates as a filter and returns the 3rd item or `empty` if undefined@@.demo-items a b ''c'' d e@@
 ; [foo[][][ ]]
 : evaluates as a filter and joins all items with an empty string@@.demo-items ''a b c d e''@@
 ; [foo[][][ - ]]

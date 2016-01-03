@@ -1,12 +1,16 @@
 created: 20151209092945086
 creator: Tobias Beer
-modified: 20151231140321221
+modified: 20160103153144890
 modifier: Tobias Beer
 tags: 
 title: setvars-Examples
 type: text/vnd.tiddlywiki
 
 \define nice() Nice to meet you.
+
+@@.note
+''Note:'' For examples of using conditionals in ''setvars'' [[see here|setvars-Conditionals]].
+@@
 
 '' the literal ` text `, with leading and trailing white-space''
 
@@ -23,12 +27,12 @@ type: text/vnd.tiddlywiki
 ''set two complex variables in one go''
 
 <$macrocall $name="`" text="""<$setvars
-foo="bar \ => \ baz"
 	_bar={{!!title}}
 	_baz="ok"
-mumble="frotz \ => \ gronk"
+foo="bar \ => \ baz"
 	_frotz=<<currentTiddler>>
-	_gronk={{!!modified}}>
+	_gronk={{!!modified}}
+mumble="frotz \ => \ gronk">
 <<foo>><br><<mumble>>
 </$setvars>"""/>
 

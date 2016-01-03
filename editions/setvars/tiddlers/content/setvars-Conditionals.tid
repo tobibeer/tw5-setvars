@@ -1,43 +1,68 @@
-created: 20151218221559291
+created: 20160103105459225
 creator: Tobias Beer
-modified: 20151219223130708
+false: 
+five: 5
+modified: 20160103135015329
 modifier: Tobias Beer
 tags: 
+ten: 10
 title: setvars-Conditionals
+true: 1
 type: text/vnd.tiddlywiki
 
-With ''setvar'' you can use basic conditionals using OR logic or IF clauses as follows:
+With ''setvars'' you can use basic conditionals using ''OR'' logic or ''IF'' clauses in [[variable declarations|setvars-Syntax]] as follows:
 
 ; OR
-: `this || that || else`
-: takes the first value that is non-empty and then stops
-; IF
-: `IF( condition ? then-value )`
-: the condition is interpreted as ''true'' if it evaluates to non-empty
-: you can use ''OR'' logic within any of the ''IF'' clause statements
+: `a || b || c`
+: returns the first non-empty value, ignoring the rest
+; some OR and some more
+: `a b || c d`
+:: always returns ''a'', followed ''b'' (if non-empty), otherwise ''c'', always appending ''d''
+; IF clauses
+: `(condition ? then-value)`
+:: or `if(condition ? then-value)`
+: the condition is interpreted as ''true'' when non-empty<div class="note">''Important:''  `if` clauses or bracketed arguments can__not__ be nested!</div>
+: you can use ''OR'' logic in the value, e.g:
+:: `(condition ? value || other)`
+::: ''meaning:'' if the ''condition'' evaluates to non-empty, take the ''value'', otherwise — should the ''value'' be empty — take the ''other'' value
+: in the ''condition'' you can compare:
+:: `a == b` — for equality
+:: `a != b` — for non-equality
+::: if the comparison is successful, the result is `true` otherwise an empty string
+::: for more complex comparison needs use ''setvars'' with [[tobibeer/eval]]
 ; IF ELSE
-: `IF( condition ? then-value ) || else-value`
-: simply append an OR clause to an IF clause to yield ELSE logic
+: `IF(condition ? then-value) || else-value`
+: append an ''OR'' clause to an ''IF'' clause to yield ''ELSE'' logic
+; IF and complex ELSE
+: `(condition ? then-value) || (else \and a literal and a\ value)`
+: using brackets without a condition marker `?` joins all contained arguments
+; IF ELSE IF
+: `(a ? x) || (b ? y) || (c ? z)`
+: join ''IF'' clauses with ''IF'' clauses via ''OR'' to formulate "else if" constructs
+
+!! Constraints
+
+While ''setvars'' provides basic conditionals, it does in no way aspire to support the entirety of the [[boolean algebra|https://en.wikipedia.org/wiki/Boolean_algebra]]. To model more complex logic or calculations, use [[tobibeer/eval]] in combination with ''setvars''.
 
 !! Examples
 
 ''simple OR''
 
-<$macrocall $name="`" text="""<$setvars foo="only || ignore \ and that\"
-	_only="this"
-	_ignore="nobody want's me">
+<$macrocall $name="`" text="""<$setvars _only="this" _ignore="Nobody want's me!"
+foo="only || ignore || \ignore\  \ and that\">
 <<foo>>
 </$setvars>"""/>
 
 ''lots of OR''
 
-<$macrocall $name="`" text="""<$setvars foo="hey no || false || finally || ignore stop"
+<$macrocall $name="`" text="""<$setvars
 	_hey="Hey, you. "
 	_no=<<doesntExistAtAll>>
 	_false={{!!not-a-field-at-all}}
 	_finally="Gotcha! "
-	_ignore="nobody want's me, still"
-	_stop="Stop messing about!">
+	_ignore="Nobody want's me, still. "
+	_stop="Stop messing about!"
+foo="hey no || false || finally || ignore stop">
 <<foo>>
 </$setvars>"""/>
 
@@ -50,13 +75,23 @@ With ''setvar'' you can use basic conditionals using OR logic or IF clauses as f
 <<foo>>
 </$setvars>"""/>
 
+''IF equal or not''
+
+<$macrocall $name="`" text="""<$setvars _a="this" _b="that"
+foo="(a == b ? \true\) || \false\"
+bar="(a != b ? \true\) || \false\">
+
+''foo'' = <<foo>><br/>
+''bar'' = <<bar>>
+</$setvars>"""/>
+
 ''IF true THEN this OR that''
 
 <$macrocall $name="`" text="""<$setvars foo="if(true ? then) || or more"
 	_true="yes"
 	_then="this"
 	_or="that"
-	_more=" => not the OR value">
+	_more=" => was not the OR value">
 <<foo>>
 </$setvars>"""/>
 
@@ -66,7 +101,7 @@ With ''setvar'' you can use basic conditionals using OR logic or IF clauses as f
 	_true=""
 	_then="this"
 	_or="that"
-	_more=" => is something else">
+	_more=" => was something else, you see?">
 <<foo>>
 </$setvars>"""/>
 
@@ -83,7 +118,7 @@ With ''setvar'' you can use basic conditionals using OR logic or IF clauses as f
 
 ''IF false THEN this OR IF true THEN that''
 
-<$macrocall $name="`" text="""<$setvars foo="if(this ? then) || if(that ? else) more"
+<$macrocall $name="`" text="""<$setvars foo="(this ? then) || (that ? else) more"
 	_this=""
 	_then="this "
 	_that="or"
@@ -91,3 +126,54 @@ With ''setvar'' you can use basic conditionals using OR logic or IF clauses as f
 	_more="=> shows the initial statement was not true">
 <<foo>>
 </$setvars>"""/>
+
+
+''complex logic and algebra using [[EVAL|tobibeer/eval]]''
+
+```
+<$setvars
+	_eval = """[[]eval[and(
+		"{{setvars-Conditionals!!true}}",
+		"{{setvars-Conditionals!!false}}"
+	)]]"""
+	_multiply = "[[]eval[
+		{{setvars-Conditionals!!ten}} *
+		{{setvars-Conditionals!!five}}
+	]]"
+	_divide = "[[]eval[
+		{{setvars-Conditionals!!ten}} /
+		{{setvars-Conditionals!!five}}
+	]]"
+result="([eval] == \true\ ? [multiply]) || [divide]">
+
+!! ''Result'' = <<result>><br/>
+''true'' = "{{setvars-Conditionals!!true}}"<br/>
+''false'' = "{{setvars-Conditionals!!false}}"<br/>
+''ten'' = "{{setvars-Conditionals!!ten}}"<br/>
+''five'' = "{{setvars-Conditionals!!five}}"<br/>
+</$setvars>
+```
+
+<<<
+<$setvars
+	_eval = """[[]eval[and(
+		"{{setvars-Conditionals!!true}}",
+		"{{setvars-Conditionals!!false}}"
+	)]]"""
+	_multiply = "[[]eval[
+		{{setvars-Conditionals!!ten}} *
+		{{setvars-Conditionals!!five}}
+	]]"
+	_divide = "[[]eval[
+		{{setvars-Conditionals!!ten}} /
+		{{setvars-Conditionals!!five}}
+	]]"
+result="([eval] == \true\ ? [multiply]) || [divide]">
+
+!! ''Result'' = <<result>><br/>
+''true'' = "{{setvars-Conditionals!!true}}"<br/>
+''false'' = "{{setvars-Conditionals!!false}}"<br/>
+''ten'' = "{{setvars-Conditionals!!ten}}"<br/>
+''five'' = "{{setvars-Conditionals!!five}}"<br/>
+</$setvars>
+<<<
