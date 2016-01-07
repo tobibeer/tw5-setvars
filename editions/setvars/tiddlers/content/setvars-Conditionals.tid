@@ -2,8 +2,9 @@ created: 20160103105459225
 creator: Tobias Beer
 false: 
 five: 5
-modified: 20160103135015329
+modified: 20160107121615521
 modifier: Tobias Beer
+summary: syntax and examples for conditional statements in the [[setvars]] widget
 tags: 
 ten: 10
 title: setvars-Conditionals
@@ -126,54 +127,3 @@ bar="(a != b ? \true\) || \false\">
 	_more="=> shows the initial statement was not true">
 <<foo>>
 </$setvars>"""/>
-
-
-''complex logic and algebra using [[EVAL|tobibeer/eval]]''
-
-```
-<$setvars
-	_eval = """[[]eval[and(
-		"{{setvars-Conditionals!!true}}",
-		"{{setvars-Conditionals!!false}}"
-	)]]"""
-	_multiply = "[[]eval[
-		{{setvars-Conditionals!!ten}} *
-		{{setvars-Conditionals!!five}}
-	]]"
-	_divide = "[[]eval[
-		{{setvars-Conditionals!!ten}} /
-		{{setvars-Conditionals!!five}}
-	]]"
-result="([eval] == \true\ ? [multiply]) || [divide]">
-
-!! ''Result'' = <<result>><br/>
-''true'' = "{{setvars-Conditionals!!true}}"<br/>
-''false'' = "{{setvars-Conditionals!!false}}"<br/>
-''ten'' = "{{setvars-Conditionals!!ten}}"<br/>
-''five'' = "{{setvars-Conditionals!!five}}"<br/>
-</$setvars>
-```
-
-<<<
-<$setvars
-	_eval = """[[]eval[and(
-		"{{setvars-Conditionals!!true}}",
-		"{{setvars-Conditionals!!false}}"
-	)]]"""
-	_multiply = "[[]eval[
-		{{setvars-Conditionals!!ten}} *
-		{{setvars-Conditionals!!five}}
-	]]"
-	_divide = "[[]eval[
-		{{setvars-Conditionals!!ten}} /
-		{{setvars-Conditionals!!five}}
-	]]"
-result="([eval] == \true\ ? [multiply]) || [divide]">
-
-!! ''Result'' = <<result>><br/>
-''true'' = "{{setvars-Conditionals!!true}}"<br/>
-''false'' = "{{setvars-Conditionals!!false}}"<br/>
-''ten'' = "{{setvars-Conditionals!!ten}}"<br/>
-''five'' = "{{setvars-Conditionals!!five}}"<br/>
-</$setvars>
-<<<
